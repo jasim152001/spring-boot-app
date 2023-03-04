@@ -1,3 +1,36 @@
+#Persistent Volume file
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: springboot-pv
+  labels:
+    app: springboot-pv
+spec:
+  capacity:
+    storage: 3Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mountpath"
+---
+
+
+#Persistent Volume Claim file
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: springboot-pvc
+  labels:
+    app: springboot-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+#Deployment file
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -44,35 +77,3 @@ spec:
   type: NodePort
   selector:
     app: springboot-app
-
----
-#Persistent Volume file
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: springboot-pv
-  labels:
-    app: springboot-pv
-spec:
-  capacity:
-    storage: 3Gi
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: "/mountpath"
----
-
-#Persistent Volume Claim file
-
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: springboot-pvc
-  labels:
-    app: springboot-pvc
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
