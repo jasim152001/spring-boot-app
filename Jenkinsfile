@@ -1,31 +1,35 @@
 pipeline {
     agent any
     environment {
-        DOCKERHUB_CREDENTIALS=credentials('docker_hub_cred')
+        DOCKERHUB_CREDENTIALS=credentials('dockerhub')
     }
 
     stages {
         stage('git-checkout') {
             steps {
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/mohammedashiqu/spring-boot-app.git']])
+                git branch: 'main', url: 'https://github.com/shefink/spring-boot-app.git'
             }
         }
-        stage('build-jar') {
+        stage('maven-build') {
             steps {
                 sh 'mvn clean install'
             }
         }
-        stage('Delete-image') {
-            steps{
-                sh 'sudo docker rmi ashiqummathoor/my-image:latest'
+        stage('sonar-test') {
+            steps {
+                withSonarQubeEnv('sonar') {
+                    sh 'mvn clean verify sonar:sonar' 
+                }
             }
         }
-        stage('Building image') {
+        stage('Delete-image') {
             steps{
-                script {
-                    dockerImage = docker.build ("ashiqummathoor/my-image:${env.BUILD_ID}")
-                    dockerImage = docker.build ("ashiqummathoor/my-image:latest")
-                }
+                sh 'sudo docker rmi shefink/spring-boot-app:latest'
+            }
+        }
+        stage('docker-image-build') {
+            steps {
+                sh 'sudo docker build -t shefink/spring-boot-app .'
             }
         }
         stage('login-to-dokcer-hub') {
@@ -33,16 +37,17 @@ pipeline {
                 sh 'sudo echo $DOCKERHUB_CREDENTIALS_PSW | sudo docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
             }
         }
-        stage('push') {
+        stage('push-docker-hub') {
             steps {
-                sh 'sudo docker push ashiqummathoor/my-image:$BUILD_NUMBER'
-                sh 'sudo docker push ashiqummathoor/my-image:latest'
+                sh 'sudo docker push shefink/spring-boot-app'
             }
         }
-        stage('apply-on-kubernetes-cluster') {
+        stage('k8s-deployment') {
             steps {
                 sh 'sudo kubectl replace --force -f kubernetes-app-ashiq.yaml'
             }
         }
     }
+        
 }
+
