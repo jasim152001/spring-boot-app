@@ -44,7 +44,7 @@ pipeline {
         }
         stage('k8s-deployment') {
             steps {
-                sh 'sudo kubectl replace --force -f kubernetes-app-ashiq.yaml'
+                sh 'sudo kubectl replace --force -f Deployment_file.yml'
             }
         }
     }
