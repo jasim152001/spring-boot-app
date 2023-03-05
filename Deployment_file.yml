@@ -45,7 +45,7 @@ spec:
       labels:
         app: springboot-app
     spec:
-      nodeName: ip-172-31-19-55.us-east-2.compute.internal
+      nodeName: ip-172-31-41-182.us-east-2.compute.internal
       containers:
         - name: my-springboot-app
           image: shefink/spring-boot-app
