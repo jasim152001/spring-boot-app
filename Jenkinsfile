@@ -22,11 +22,11 @@ pipeline {
                 }
             }
         }
-//         stage('Delete-image') {
-//             steps{
-//                 sh 'sudo docker rmi shefink/spring-boot-app:latest'
-//             }
-//         }
+        stage('Delete-image') {
+            steps{
+                sh 'sudo docker rmi shefink/spring-boot-app:latest'
+            }
+        }
         stage('docker-image-build') {
             steps {
                 sh 'sudo docker build -t shefink/spring-boot-app .'
